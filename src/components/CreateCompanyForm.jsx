@@ -5,7 +5,7 @@ const CreateCompanyForm = () => {
   const [serviceProvider, setServiceProvider] = useState(false);
   
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full p-2 mx-auto">
       <h2 className="text-lg font-medium pb-2 border-b border-red-500 mb-4">Create Company</h2>
       
       {/* Account Details Section */}

@@ -3,7 +3,7 @@ import { Plus, Upload, Calendar } from 'lucide-react';
 
 const ComprehensiveCreateForm = () => {
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full p-2 mx-auto">
       <h2 className="text-lg font-medium pb-2 border-b border-red-500 mb-6">Create</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -340,7 +340,7 @@ const ComprehensiveCreateForm = () => {
       </div>
       
       {/* Create Button */}
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-center mt-6">
         <button className="px-6 py-2 bg-primary text-white rounded flex items-center gap-2">
           <Plus size={16} />
           Create
