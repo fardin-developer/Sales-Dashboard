@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --color-light: #F6F5F5;  /* Div background */
+  --color-primary: #0D468A; /* Button & Toggle */
+}
