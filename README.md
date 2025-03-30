@@ -1,12 +1,42 @@
-# React + Vite
+# 🚀 React + Vite + Tailwind  
+A minimal setup for building React applications with Vite, featuring hot module replacement (HMR) and ESLint integration.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 📦 Installation  
+To get started, install dependencies using `pnpm`:  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```sh
+pnpm i
+```
 
-## Expanding the ESLint configuration
+## 🚀 Start Development Server  
+Run the following command to start the development server with HMR:  
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```sh
+pnpm run dev
+```
+
+This will spin up a local server, typically at `http://localhost:5173/`, where you can see your app live with fast refresh.
+
+---
+
+## 🎨 Global Theme  
+The global theme is defined inside `index.css`, where:  
+- **Primary Color:** Used for buttons, highlights, and accents.  
+- **Light Color:** Used for background and subtle elements.  
+
+Feel free to customize these in `index.css` to match your design preferences.
+
+---
+
+## ✨ ESLint Configuration  
+If you're developing a production-ready application, we recommend:  
+- Using **TypeScript** for better type safety.  
+- Enabling **type-aware lint rules** by integrating [`typescript-eslint`](https://typescript-eslint.io).  
+
+For a TypeScript setup, check out the official [Vite + React TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts).
+
+---
+
+### Happy coding! 🚀🎉
