@@ -135,9 +135,7 @@ const CreateCampaignPage = () => {
       {currentStep === 1 && (
         <>
           <div className="mb-6 flex items-center gap-2">
-            <div className="w-6 h-6 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-sm font-medium">
-              3
-            </div>
+
             <h2 className="text-lg font-medium text-gray-900">Available Import Methods</h2>
           </div>
 
