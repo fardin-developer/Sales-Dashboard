@@ -27,7 +27,7 @@ const LanguageIcon = () => (
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-0 left-0 w-screen h-20 border-t flex justify-center items-center z-50">
+    <nav className="fixed top-0 left-0 w-screen h-20 border-t flex justify-center items-center z-50 bg-white">
       {/* Left Side: Logo */}
       <div className='w-60 block'>
         <div className="p-4">
