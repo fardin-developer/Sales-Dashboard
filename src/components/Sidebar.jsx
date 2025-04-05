@@ -33,7 +33,7 @@ export default function Sidebar() {
     }`;
 
   return (
-    <aside className="w-64 h-screen border-r border-gray-light flex flex-col bg-bg-light">
+    <aside className="w-64 h-screen border-r border-gray-light flex flex-col">
       {/* Logo */}
       <div className="p-4 border-b border-gray-light">
         <Link to="/" className="flex items-center">

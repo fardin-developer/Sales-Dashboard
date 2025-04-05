@@ -89,13 +89,13 @@ const CreateCampaignPage = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 w-full">
+    <div className="p-8  w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Create New Campaign</h1>
           <p className="text-gray-600">Set up your campaign in just a few steps to reach your target audience effectively</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 ">
           <button 
             onClick={handleSaveDraft}
             className="px-4 py-2 border border-gray-300 rounded-lg flex items-center gap-2 bg-white text-gray-800 hover:bg-gray-50 transition-colors"
@@ -115,7 +115,7 @@ const CreateCampaignPage = () => {
       </div>
 
       {/* Steps */}
-      <div className="flex justify-between mb-12 px-12">
+      <div className="flex justify-between mb-12 px-12 bg-white p-8  rounded-2xl">
         {steps.map((step) => (
           <div key={step.id} className="flex flex-col items-center">
             <div 
