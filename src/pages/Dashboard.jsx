@@ -6,12 +6,7 @@ const Dashboard = () => {
   return (
    <>
   <div className='mt-20'>
-    <DashboardTop/>
-    <FilterBar/>
-  <RecruitmentCard/>
-   <RecruitmentCard/>
-   <RecruitmentCard/>
-   <RecruitmentCard/>
+   <h1>Soon !</h1>
   </div>
    </>
   )
