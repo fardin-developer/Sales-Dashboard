@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"; // 1. Import useLocation
 import {
   Home,
   LayoutList,
@@ -12,10 +12,25 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
+  const location = useLocation(); // 2. Get current route
   const [user] = useState({
     name: "John Smith",
-    role: "Premium"
+    role: "Premium",
   });
+
+  const isActive = (path) => location.pathname === path;
+
+  const linkClass = (path) =>
+    `flex items-center gap-3 px-3 py-2 text-sm rounded-md ${
+      isActive(path)
+        ? "text-primary bg-primary/10"
+        : "text-text-primary hover:bg-bg-white"
+    }`;
+
+  const iconClass = (path) =>
+    `w-5 h-5 ${
+      isActive(path) ? "text-primary" : "text-text-secondary"
+    }`;
 
   return (
     <aside className="w-64 h-screen border-r border-gray-light flex flex-col bg-bg-light">
@@ -35,85 +50,58 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto">
-        {/* Main Navigation */}
         <div className="p-4">
           <div className="text-xs font-semibold text-text-secondary mb-2">MAIN</div>
           <nav className="space-y-1">
-            <Link
-              to="/"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <Home className="w-5 h-5 text-text-secondary" />
+            <Link to="/" className={linkClass("/")}>
+              <Home className={iconClass("/")} />
               <span>Dashboard</span>
             </Link>
-            
-            <Link
-              to="/campaigns"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-primary bg-primary/10 rounded-md"
-            >
-              <LayoutList className="w-5 h-5 text-primary" />
+
+            <Link to="/campaigns" className={linkClass("/campaigns")}>
+              <LayoutList className={iconClass("/campaigns")} />
               <span>Campaigns</span>
               <span className="ml-auto bg-primary text-white px-2 py-0.5 rounded-full text-xs">3</span>
             </Link>
-            
-            <Link
-              to="/contacts"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <Users className="w-5 h-5 text-text-secondary" />
+
+            <Link to="/contacts" className={linkClass("/contacts")}>
+              <Users className={iconClass("/contacts")} />
               <span>Contacts</span>
             </Link>
-            
-            <Link
-              to="/conversations"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <MessageSquare className="w-5 h-5 text-text-secondary" />
+
+            <Link to="/conversations" className={linkClass("/conversations")}>
+              <MessageSquare className={iconClass("/conversations")} />
               <span>Conversations</span>
               <span className="ml-auto bg-gray-light text-text-secondary px-2 py-0.5 rounded-full text-xs">5</span>
             </Link>
           </nav>
         </div>
 
-        {/* Analytics */}
         <div className="p-4">
           <div className="text-xs font-semibold text-text-secondary mb-2">ANALYTICS</div>
           <nav className="space-y-1">
-            <Link
-              to="/reports"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <BarChart2 className="w-5 h-5 text-text-secondary" />
+            <Link to="/reports" className={linkClass("/reports")}>
+              <BarChart2 className={iconClass("/reports")} />
               <span>Reports</span>
             </Link>
-            
-            <Link
-              to="/performance"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <Activity className="w-5 h-5 text-text-secondary" />
+
+            <Link to="/performance" className={linkClass("/performance")}>
+              <Activity className={iconClass("/performance")} />
               <span>Performance</span>
             </Link>
           </nav>
         </div>
 
-        {/* Settings */}
         <div className="p-4">
           <div className="text-xs font-semibold text-text-secondary mb-2">SETTINGS</div>
           <nav className="space-y-1">
-            <Link
-              to="/settings"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <Settings className="w-5 h-5 text-text-secondary" />
+            <Link to="/settings" className={linkClass("/settings")}>
+              <Settings className={iconClass("/settings")} />
               <span>Settings</span>
             </Link>
-            
-            <Link
-              to="/security"
-              className="flex items-center gap-3 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-white"
-            >
-              <Shield className="w-5 h-5 text-text-secondary" />
+
+            <Link to="/security" className={linkClass("/security")}>
+              <Shield className={iconClass("/security")} />
               <span>Security</span>
             </Link>
           </nav>
