@@ -4,7 +4,7 @@ import DashboardLayout from "./layout/DashboardLayout";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
-import Company from "./pages/Company";
+import CampaignManagement from "./pages/CampaignManagement";
 // import Candidate from "./pages/Candidate";
 // import Orders from "./pages/Orders";
 // import Request from "./pages/Request";
@@ -19,11 +19,11 @@ const App = () => {
       <div className="flex h-screen">
         <Sidebar />
         <div className="flex flex-col flex-1">
-          <Navbar />
+          {/* <Navbar /> */}
           <div className="p-4 ">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-               <Route path="/company" element={<Company />} />
+               <Route path="/campaigns" element={<CampaignManagement />} />
               {/*<Route path="/candidate" element={<Candidate />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/request" element={<Request />} />

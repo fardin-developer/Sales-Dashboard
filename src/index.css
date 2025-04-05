@@ -1,6 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-light: #F6F5F5;  /* Div background */
-  --color-primary: #0D468A; /* Button & Toggle */
+  /* Primary Colors */
+  --color-primary: #5E6BF8;      /* Primary button color (Preview Campaign, Continue buttons) */
+  --color-secondary: #F87171;    /* Connect Google button */
+  
+  /* Background Colors */
+  --color-bg-light: #F9FAFB;     /* Main background color */
+  --color-bg-white: #FFFFFF;     /* Card backgrounds */
+  
+  /* Accent Colors */
+  --color-accent-green: #10B981; /* AI Sourcing icon, Start AI Sourcing button */
+  --color-accent-red: #F87171;   /* Google Contacts icon */
+  --color-accent-blue: #5E6BF8;  /* Connect Data active circle */
+  
+  /* UI Element Colors */
+  --color-gray-light: #E5E7EB;   /* Inactive number circles */
+  --color-text-primary: #111827; /* Main text color */
+  --color-text-secondary: #6B7280; /* Subtitle text color */
 }
