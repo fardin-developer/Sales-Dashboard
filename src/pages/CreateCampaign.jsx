@@ -26,7 +26,7 @@ const CreateCampaignPage = () => {
       id: 2, 
       name: 'Google Contacts', 
       icon: 'google',
-      description: 'Sync your Google contacts directly with klev.ai. Your contacts will be automatically imported and updated.',
+      description: 'Sync your Google contacts directly with saleskai.pro. Your contacts will be automatically imported and updated.',
       buttonText: 'Connect Google',
       buttonAction: () => handleSelectImportMethod(2),
       color: 'red'
