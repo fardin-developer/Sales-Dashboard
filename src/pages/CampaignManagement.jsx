@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Modal, Form, Input, Select, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const CampaignManagement = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  
   const campaigns = [
     {
       id: 1,
@@ -23,11 +27,28 @@ const CampaignManagement = () => {
   ];
 
   const handleNewCampaign = () => {
-    navigate('/campaigns/create');
+    setIsModalOpen(true);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  const handleModalSubmit = () => {
+    form.validateFields().then(values => {
+      console.log('New campaign values:', values);
+      // Here you would handle the creation of the new campaign
+      setIsModalOpen(false);
+      form.resetFields();
+      
+      // Navigate to another page or refresh the current view
+      navigate('/campaigns/create', { state: values });
+    });
   };
 
   return (
-    <div className="p-8 bg-gray-50 w-full">
+    <div className="p-8 w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Campaign Management</h1>
@@ -157,6 +178,55 @@ const CampaignManagement = () => {
         <button className="text-gray-700 font-medium">Export Report</button>
         <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg">View Analytics</button>
       </div>
+
+      {/* New Campaign Modal */}
+      <Modal
+        title="Create New Campaign"
+        open={isModalOpen}
+        onCancel={handleModalCancel}
+        footer={[
+          <Button key="cancel" onClick={handleModalCancel}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleModalSubmit}>
+            Create Campaign
+          </Button>,
+        ]}
+        width={500}
+        centered
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          name="newCampaignForm"
+        >
+          <Form.Item
+            name="campaignName"
+            label="Campaign Name"
+            rules={[
+              { required: true, message: 'Please enter a campaign name' },
+            ]}
+          >
+            <Input placeholder="e.g., Summer Launch Promo 2025" />
+          </Form.Item>
+          
+          <Form.Item
+            name="objectiveType"
+            label="Objective Type"
+            rules={[
+              { required: true, message: 'Please select an objective type' },
+            ]}
+          >
+            <Select placeholder="Select an objective type">
+              <Select.Option value="leadGeneration">Lead Generation</Select.Option>
+              <Select.Option value="productPromotion">Product Promotion</Select.Option>
+              <Select.Option value="retargeting">Retargeting</Select.Option>
+              <Select.Option value="brandAwareness">Brand Awareness</Select.Option>
+              <Select.Option value="customerRetention">Customer Retention</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

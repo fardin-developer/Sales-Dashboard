@@ -11,17 +11,8 @@ const CampaignForm = ({ onSubmit }) => {
       customerPainPoints: '',
       competitors: '',
       usp: '',
-    },
-    campaignConfig: {
-      campaignName: '',
-      targetRegion: '',
-      maxOutreachPerDay: '',
-      preferredDemoDuration: '',
-      salesTechniqueStyle: '',
-      tonePreference: '',
-      objectionHandling: 'reactive',
-      ctaPreference: '',
-    },
+      prompt: ''
+    }
   });
 
   const handleChange = (e) => {
@@ -165,115 +156,20 @@ const CampaignForm = ({ onSubmit }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid  gap-6 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Campaign Name</label>
-          <input
-            type="text"
-            name="campaignConfig.campaignName"
-            value={formData.campaignConfig.campaignName}
+          <label className="block text-sm font-medium text-gray-700">Write your prompt</label>
+          <textarea
+            name="campaign.prompt"
+            value={formData.campaign.prompt}
             onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
+            placeholder={`Hi, I have a company XYZ. I want to sell my ABC product. The product is unique and 40% cheaper than competitor ABCD. Always speak to the client in a soft tone and chat like a normal human being. If you know the user's mother tongue, greet them in their mother tongue.`}
+            rows={2}
+            className="w-full mt-1 p-3 border rounded-lg  "
             required
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Target Region / Timezone</label>
-          <input
-            type="text"
-            name="campaignConfig.targetRegion"
-            value={formData.campaignConfig.targetRegion}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Maximum Outreach Per Day</label>
-          <input
-            type="number"
-            name="campaignConfig.maxOutreachPerDay"
-            value={formData.campaignConfig.maxOutreachPerDay}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Preferred Demo Duration (minutes)</label>
-          <input
-            type="number"
-            name="campaignConfig.preferredDemoDuration"
-            value={formData.campaignConfig.preferredDemoDuration}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Sales Technique Style</label>
-          <select
-            name="campaignConfig.salesTechniqueStyle"
-            value={formData.campaignConfig.salesTechniqueStyle}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          >
-            <option value="">Select a technique</option>
-            {salesTechniques.map((technique) => (
-              <option key={technique} value={technique}>
-                {technique}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Tone Preference</label>
-          <select
-            name="campaignConfig.tonePreference"
-            value={formData.campaignConfig.tonePreference}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          >
-            <option value="">Select a tone</option>
-            {tonePreferences.map((tone) => (
-              <option key={tone} value={tone}>
-                {tone}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Objection Handling</label>
-          <select
-            name="campaignConfig.objectionHandling"
-            value={formData.campaignConfig.objectionHandling}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          >
-            <option value="reactive">Reactive</option>
-            <option value="proactive">Proactive</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">CTA Preference</label>
-          <select
-            name="campaignConfig.ctaPreference"
-            value={formData.campaignConfig.ctaPreference}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          >
-            <option value="">Select a CTA</option>
-            {ctaPreferences.map((cta) => (
-              <option key={cta} value={cta}>
-                {cta}
-              </option>
-            ))}
-          </select>
-        </div>
+
       </div>
 
       <button
