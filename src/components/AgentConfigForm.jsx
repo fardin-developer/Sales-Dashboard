@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Select, Input, Button, Card, Typography } from 'antd';
 
 const { TextArea } = Input;
@@ -10,7 +10,7 @@ const AgentConfigForm = ({ initialValues = {}, onSubmit }) => {
   // Set initial values
   form.setFieldsValue({
     tone: initialValues.tone || '',
-    template: initialValues.template || '',
+    prompt: initialValues.prompt || '',
     greetingStyle: initialValues.greetingStyle || ''
   });
 
@@ -19,7 +19,7 @@ const AgentConfigForm = ({ initialValues = {}, onSubmit }) => {
   };
 
   return (
-    <Card className="shadow-sm">
+    <div>
       <Title level={4}>Prompt & Persona Setup</Title>
       
       <Form
@@ -41,12 +41,12 @@ const AgentConfigForm = ({ initialValues = {}, onSubmit }) => {
         </Form.Item>
 
         <Form.Item
-          name="template"
-          label="Prompt Template"
-          rules={[{ required: true, message: 'Please enter a prompt template' }]}
+          name="prompt"
+          label="Agent Prompt & Messaging"
+          rules={[{ required: true, message: 'Please write your agent prompt and messaging guidelines' }]}
         >
           <TextArea
-            placeholder="e.g. 'You are a helpful AI assistant…'"
+            placeholder={`Hi, I have a company XYZ. I want to sell my ABC product. The product is unique and 40% cheaper than competitor ABCD. Always speak to the client in a soft tone and chat like a normal human being. If you know the user's mother tongue, greet them in their mother tongue.`}
             rows={4}
           />
         </Form.Item>
@@ -64,13 +64,13 @@ const AgentConfigForm = ({ initialValues = {}, onSubmit }) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="flex justify-end">
+        <Form.Item>
           <Button type="primary" htmlType="submit">
-            Continue
+            Save Configuration
           </Button>
         </Form.Item>
       </Form>
-    </Card>
+    </div>
   );
 };
 

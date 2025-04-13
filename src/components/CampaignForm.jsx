@@ -1,184 +1,201 @@
 import React, { useState } from 'react';
+import { Form, Input, Button, Upload, Typography, Card, Row, Col, Divider } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
-const CampaignForm = ({ onSubmit }) => {
+const { TextArea } = Input;
+const { Title, Text, Paragraph } = Typography;
+
+const CampaignForm = ({ onSubmit, initialData = {} }) => {
+  const [form] = Form.useForm();
+  
+  // Initialize with provided data or default values
   const [formData, setFormData] = useState({
     campaign: {
-      productName: '',
-      category: '',
-      website: '',
-      description: '',
-      files: [],
-      customerPainPoints: '',
-      competitors: '',
-      usp: '',
-      prompt: ''
+      productName: initialData.campaign?.productName || '',
+      category: initialData.campaign?.category || '',
+      website: initialData.campaign?.website || '',
+      description: initialData.campaign?.description || '',
+      files: initialData.campaign?.files || [],
+      customerPainPoints: initialData.campaign?.customerPainPoints || '',
+      competitors: initialData.campaign?.competitors || '',
+      usp: initialData.campaign?.usp || '',
+      prompt: initialData.campaign?.prompt || ''
     }
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const [section, field] = name.split('.');
-    setFormData((prev) => ({
-      ...prev,
-      [section]: { ...prev[section], [field]: value },
+  const handleChange = (changedValues) => {
+    const updatedValues = {};
+    
+    // Process the changed values to match our data structure
+    Object.keys(changedValues).forEach(key => {
+      const [section, field] = key.split('.');
+      if (!updatedValues[section]) {
+        updatedValues[section] = {};
+      }
+      updatedValues[section][field] = changedValues[key];
+    });
+    
+    // Update the form data state
+    setFormData(prevData => {
+      const newData = { ...prevData };
+      Object.keys(updatedValues).forEach(section => {
+        newData[section] = { ...newData[section], ...updatedValues[section] };
+      });
+      return newData;
+    });
+  };
+
+  const handleFileChange = (info) => {
+    const fileList = info.fileList.slice(0, 4);
+    setFormData(prevData => ({
+      ...prevData,
+      campaign: { ...prevData.campaign, files: fileList }
     }));
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 4);
-    setFormData((prev) => ({
-      ...prev,
-      campaign: { ...prev.campaign, files },
-    }));
+  const handleSubmit = () => {
+    form.validateFields().then(values => {
+      // Transform values to match our data structure
+      const processedValues = {
+        campaign: {}
+      };
+      
+      Object.keys(values).forEach(key => {
+        const [section, field] = key.split('.');
+        if (!processedValues[section]) {
+          processedValues[section] = {};
+        }
+        processedValues[section][field] = values[key];
+      });
+      
+      // Add files to the processed values
+      processedValues.campaign.files = formData.campaign.files;
+      
+      onSubmit(processedValues);
+    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
   };
-
-  const salesTechniques = [
-    'Pain-Agitate-Solution (PAS)',
-    'Feature-Benefit-CTA',
-    'Storytelling / Use Case Driven',
-    'Value-Based Selling',
-    'Question-Led Discovery Approach',
-  ];
-
-  const tonePreferences = [
-    'Professional & Formal',
-    'Friendly & Conversational',
-    'Assertive & Direct',
-    'Empathetic & Consultative',
-  ];
-
-  const ctaPreferences = [
-    'Schedule a Demo',
-    'Reply to Learn More',
-    'Soft Intro → Demo Invite in Follow-Up',
-  ];
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm">
-      <h2 className="text-xl font-medium mb-4">Create Message</h2>
-      <p className="text-gray-600 mb-8">Design your campaign message and content here</p>
+    <div>
+      <Title level={4} style={{ marginBottom: 8 }}>Create Message</Title>
+      <Paragraph type="secondary" style={{ marginBottom: 24 }}>Design your campaign message and content here</Paragraph>
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Product Name</label>
-          <input
-            type="text"
-            name="campaign.productName"
-            value={formData.campaign.productName}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
-          <input
-            type="text"
-            name="campaign.category"
-            value={formData.campaign.category}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Website</label>
-          <input
-            type="url"
-            name="campaign.website"
-            value={formData.campaign.website}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            name="campaign.description"
-            value={formData.campaign.description}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Files (max 4: PDF, DOCX)</label>
-          <input
-            type="file"
-            accept=".pdf,.docx"
-            multiple
-            onChange={handleFileChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-          />
-          {formData.campaign.files.length > 0 && (
-            <ul className="mt-2">
-              {formData.campaign.files.map((file, index) => (
-                <li key={index}>{file.name}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Customer Pain Points Addressed</label>
-          <textarea
-            name="campaign.customerPainPoints"
-            value={formData.campaign.customerPainPoints}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Competitors (optional)</label>
-          <input
-            type="text"
-            name="campaign.competitors"
-            value={formData.campaign.competitors}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">USP (optional)</label>
-          <input
-            type="text"
-            name="campaign.usp"
-            value={formData.campaign.usp}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-          />
-        </div>
-      </div>
-
-      <div className="grid  gap-6 mb-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Write your prompt</label>
-          <textarea
-            name="campaign.prompt"
-            value={formData.campaign.prompt}
-            onChange={handleChange}
-            placeholder={`Hi, I have a company XYZ. I want to sell my ABC product. The product is unique and 40% cheaper than competitor ABCD. Always speak to the client in a soft tone and chat like a normal human being. If you know the user's mother tongue, greet them in their mother tongue.`}
-            rows={2}
-            className="w-full mt-1 p-3 border rounded-lg  "
-            required
-          />
-        </div>
-
-      </div>
-
-      <button
-        type="submit"
-        className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={handleChange}
+        onFinish={handleSubmit}
+        initialValues={{
+          'campaign.productName': formData.campaign.productName,
+          'campaign.category': formData.campaign.category,
+          'campaign.website': formData.campaign.website,
+          'campaign.description': formData.campaign.description,
+          'campaign.customerPainPoints': formData.campaign.customerPainPoints,
+          'campaign.competitors': formData.campaign.competitors,
+          'campaign.usp': formData.campaign.usp,
+          'campaign.prompt': formData.campaign.prompt
+        }}
       >
-        Save and Continue
-      </button>
-    </form>
+        <Row gutter={24}>
+          <Col span={12}>
+            <Form.Item
+              label="Product Name"
+              name="campaign.productName"
+              rules={[{ required: true, message: 'Please enter product name' }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Category"
+              name="campaign.category"
+              rules={[{ required: true, message: 'Please enter category' }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Website"
+              name="campaign.website"
+              rules={[
+                { required: true, message: 'Please enter website URL' },
+                { type: 'url', message: 'Please enter a valid URL' }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Description"
+              name="campaign.description"
+              rules={[{ required: true, message: 'Please enter description' }]}
+            >
+              <TextArea rows={4} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Files (max 4: PDF, DOCX)"
+              name="campaign.files"
+              valuePropName="fileList"
+              getValueFromEvent={normFile}
+            >
+              <Upload
+                accept=".pdf,.docx"
+                multiple
+                maxCount={4}
+                fileList={formData.campaign.files}
+                onChange={handleFileChange}
+                beforeUpload={() => false} // Prevent auto upload
+              >
+                <Button icon={<UploadOutlined />}>
+                  Select Files
+                </Button>
+              </Upload>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Customer Pain Points Addressed"
+              name="campaign.customerPainPoints"
+              rules={[{ required: true, message: 'Please enter customer pain points' }]}
+            >
+              <TextArea rows={4} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Competitors (optional)"
+              name="campaign.competitors"
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="USP (optional)"
+              name="campaign.usp"
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
+
+
+
+ 
+      </Form>
+    </div>
   );
 };
 

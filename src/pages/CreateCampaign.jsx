@@ -124,7 +124,6 @@ const CreateCampaignPage = () => {
                 <Steps.Step 
                   key={item.title} 
                   title={item.title} 
-                  description={item.description} 
                 />
               ))}
             </Steps>
@@ -166,6 +165,7 @@ const CreateCampaignPage = () => {
         .campaign-container {
           margin: 0 auto;
           padding: 24px;
+          width:100%;
         }
         .main-content {
           margin-top: 24px;

@@ -1,86 +1,99 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { Form, Select, TimePicker, Card, Typography, Button, Row, Col } from 'antd';
+import dayjs from 'dayjs';
 
-const ScheduleForm = ({ onSubmit }) => {
-  const [scheduleData, setScheduleData] = useState({
-    startDate: '',
-    endDate: '',
-    timeSlots: '',
-    frequency: 'daily',
-  });
+const { Title, Text } = Typography;
+const { Option } = Select;
+const { RangePicker } = TimePicker;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setScheduleData((prev) => ({ ...prev, [name]: value }));
+const ScheduleForm = ({ onSubmit, initialValues = {} }) => {
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (initialValues.timeZone || initialValues.timeSlot) {
+      const timeSlot = initialValues.timeSlot 
+        ? [dayjs(initialValues.timeSlot[0]), dayjs(initialValues.timeSlot[1])]
+        : undefined;
+
+      form.setFieldsValue({
+        timeZone: initialValues.timeZone || undefined,
+        timeSlot
+      });
+    }
+  }, [initialValues, form]);
+
+  const handleSubmit = (values) => {
+    const formattedValues = {
+      ...values,
+      timeSlot: values.timeSlot 
+        ? [values.timeSlot[0].format('HH:mm'), values.timeSlot[1].format('HH:mm')]
+        : undefined
+    };
+    onSubmit(formattedValues);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(scheduleData);
-  };
+  const timeZones = [
+    { label: '(GMT-08:00) Pacific Time', value: 'America/Los_Angeles' },
+    { label: '(GMT-07:00) Mountain Time', value: 'America/Denver' },
+    { label: '(GMT-06:00) Central Time', value: 'America/Chicago' },
+    { label: '(GMT-05:00) Eastern Time', value: 'America/New_York' },
+    { label: '(GMT+00:00) UTC', value: 'UTC' },
+    { label: '(GMT+01:00) Central European Time', value: 'Europe/Paris' },
+    { label: '(GMT+02:00) Eastern European Time', value: 'Europe/Helsinki' },
+    { label: '(GMT+03:00) Moscow Time', value: 'Europe/Moscow' },
+    { label: '(GMT+05:30) India Standard Time', value: 'Asia/Kolkata' },
+    { label: '(GMT+08:00) China Standard Time', value: 'Asia/Shanghai' },
+    { label: '(GMT+09:00) Japan Standard Time', value: 'Asia/Tokyo' },
+    { label: '(GMT+10:00) Australian Eastern Time', value: 'Australia/Sydney' }
+  ];
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm">
-      <h2 className="text-xl font-medium mb-4">Schedule Campaign</h2>
-      <p className="text-gray-600 mb-8">Set timing and delivery options for your campaign</p>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+      <Card style={{ maxWidth: 700, width: '100%', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)' }}>
+        <Title level={4} style={{ textAlign: 'center' }}>Schedule Campaign</Title>
+        <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginBottom: 24 }}>
+          Set timing and delivery options for your campaign
+        </Text>
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Start Date</label>
-          <input
-            type="date"
-            name="startDate"
-            value={scheduleData.startDate}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">End Date</label>
-          <input
-            type="date"
-            name="endDate"
-            value={scheduleData.endDate}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Time Slots</label>
-          <input
-            type="text"
-            name="timeSlots"
-            value={scheduleData.timeSlots}
-            onChange={handleChange}
-            placeholder="e.g., 9 AM - 5 PM"
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Frequency</label>
-          <select
-            name="frequency"
-            value={scheduleData.frequency}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border rounded-lg"
-            required
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="custom">Custom</option>
-          </select>
-        </div>
-      </div>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="timeZone"
+                label="Time Zone"
+                rules={[{ required: true, message: 'Please select a time zone' }]}
+              >
+                <Select placeholder="Select time zone">
+                  {timeZones.map(tz => (
+                    <Option key={tz.value} value={tz.value}>{tz.label}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
 
-      <button
-        type="submit"
-        className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-      >
-        Save and Continue
-      </button>
-    </form>
+            <Col span={12}>
+              <Form.Item
+                name="timeSlot"
+                label="Active Hours"
+                rules={[{ required: true, message: 'Please select time slot' }]}
+              >
+                <RangePicker 
+                  format="HH:mm"
+                  minuteStep={15}
+                  placeholder={['Start Time', 'End Time']}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+        </Form>
+      </Card>
+    </div>
   );
 };
 
