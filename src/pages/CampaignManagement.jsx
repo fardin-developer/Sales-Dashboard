@@ -48,7 +48,7 @@ const CampaignManagement = () => {
   };
 
   return (
-    <div className="p-8 w-full">
+    <div className="p-8 w-full bg-white h-screen">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Campaign Management</h1>
