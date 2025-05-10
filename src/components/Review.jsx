@@ -1,10 +1,37 @@
 import React from 'react';
 import { Card, Typography, Divider, Row, Col, Descriptions, Tag } from 'antd';
+import { UploadOutlined, GoogleOutlined, RobotOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph, Text } = Typography;
 
 const Review = ({ campaignData }) => {
-    const { message, agent, schedule } = campaignData;
+    const { import_method, message, agent, schedule } = campaignData;
+
+    const getImportMethodIcon = (type) => {
+        switch (type) {
+            case 'csv':
+                return <UploadOutlined />;
+            case 'google_workspace':
+                return <GoogleOutlined />;
+            case 'auto_source':
+                return <RobotOutlined />;
+            default:
+                return null;
+        }
+    };
+
+    const getImportMethodName = (type) => {
+        switch (type) {
+            case 'csv':
+                return 'CSV Upload';
+            case 'google_workspace':
+                return 'Google Contacts';
+            case 'auto_source':
+                return 'AI Sourcing';
+            default:
+                return 'Not Selected';
+        }
+    };
 
     return (
         <Card bordered={false} className="review-card">
@@ -16,6 +43,31 @@ const Review = ({ campaignData }) => {
             <Divider />
 
             <Row gutter={[24, 24]}>
+                <Col span={24}>
+                    <Card
+                        title="Import Method"
+                        size="small"
+                        bordered={false}
+                        className="inner-card"
+                    >
+                        <Descriptions column={1} size="small">
+                            <Descriptions.Item label="Method">
+                                <Tag icon={getImportMethodIcon(import_method.source_type)} color={
+                                    import_method.source_type === 'csv' ? 'blue' :
+                                    import_method.source_type === 'google_workspace' ? 'red' :
+                                    import_method.source_type === 'auto_source' ? 'green' : 'default'
+                                }>
+                                    {getImportMethodName(import_method.source_type)}
+                                </Tag>
+                            </Descriptions.Item>
+                            {import_method.source_type === 'csv' && import_method.source_file_ids?.length > 0 && (
+                                <Descriptions.Item label="Uploaded File">
+                                    <Tag color="blue">CSV File Uploaded</Tag>
+                                </Descriptions.Item>
+                            )}
+                        </Descriptions>
+                    </Card>
+                </Col>
                 <Col span={24} md={12}>
                     <Card
                         title="Campaign Details"
