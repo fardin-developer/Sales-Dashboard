@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Layout, Steps, Button, Card, message, Typography, Row, Col, Divider, Space } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Layout, Steps, Button, Card, message, Typography, Space } from 'antd';
 import { 
   LeftOutlined, 
   RightOutlined, 
@@ -13,20 +14,51 @@ import AgentConfigForm from '../components/AgentConfigForm';
 import ScheduleForm from '../components/ScheduleForm';
 import CampaignHeader from '../components/CampaignHeader';
 import Review from '../components/Review';
+import axios from 'axios';
 
 const { Content } = Layout;
-const { Title, Text, Paragraph } = Typography;
 
 const CreateCampaignPage = () => {
-  // Local state management for current step and form data
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [campaignId, setCampaignId] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedImportMethod, setSelectedImportMethod] = useState(null);
   const [isDraftSaved, setIsDraftSaved] = useState(false);
-  const [campaignData, setCampaignData] = useState({});
-  const [agentConfig, setAgentConfig] = useState({});
-  const [scheduleData, setScheduleData] = useState({});
+  const [formData, setFormData] = useState({
+    message: {
+      product_name: '',
+      category: '',
+      website: '',
+      description: '',
+      files: [],
+      customer_pain_points: '',
+      competitors: '',
+      usp: '',
+      prompt: ''
+    },
+    agent: {
+      agent_tone: '',
+      agent_prompt: '',
+      greeting_style: ''
+    },
+    schedule: {
+      time_zone: '',
+      timeSlot: null
+    }
+  });
+  const [errors, setErrors] = useState({});
 
-  // Steps configuration with titles and descriptions
+  useEffect(() => {
+    if (!location.state?.campaignId) {
+      message.error('Invalid campaign creation flow. Redirecting to campaign management.');
+      navigate('/campaigns');
+      return;
+    }
+    setCampaignId(location.state.campaignId);
+  }, [location, navigate]);
+
   const steps = [
     { title: 'Connect Data', description: 'Import your contacts' },
     { title: 'Create Message', description: 'Design your campaign' },
@@ -35,11 +67,80 @@ const CreateCampaignPage = () => {
     { title: 'Review', description: 'Final check' },
   ];
 
-  // Navigation functions for steps
+  // Validation logic for each step
+  const validateStep = (step) => {
+    const newErrors = {};
+    if (step === 1) {
+      const { message } = formData;
+      if (!message.product_name) newErrors.product_name = 'Product name is required';
+      if (!message.category) newErrors.category = 'Category is required';
+      if (!message.website) newErrors.website = 'Website URL is required';
+      else if (!/^(https?:\/\/)/.test(message.website)) newErrors.website = 'Invalid URL';
+      if (!message.description) newErrors.description = 'Description is required';
+      // if (!message.files || message.files.length === 0) newErrors.files = 'At least one file is required';
+      if (!message.customer_pain_points) newErrors.customer_pain_points = 'Customer pain points are required';
+      if (!message.prompt) newErrors.prompt = 'Prompt is required';
+    } else if (step === 2) {
+      const { agent } = formData;
+      if (!agent.agent_tone) newErrors.agent_tone = 'Agent tone is required';
+      if (!agent.agent_prompt) newErrors.agent_prompt = 'Agent prompt is required';
+      else if (agent.agent_prompt.length < 50) newErrors.agent_prompt = 'Prompt must be at least 50 characters';
+      if (!agent.greeting_style) newErrors.greeting_style = 'Greeting style is required';
+    } else if (step === 3) {
+      const { schedule } = formData;
+      if (!schedule.time_zone) newErrors.time_zone = 'Time zone is required';
+      if (!schedule.timeSlot || schedule.timeSlot.length !== 2) newErrors.timeSlot = 'Time slot is required';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleFormChange = (section, data) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: { ...prev[section], ...data }
+    }));
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      Object.keys(data).forEach((key) => delete newErrors[key]);
+      return newErrors;
+    });
+  };
+
   const next = () => {
+    console.log("This is the currentStep", currentStep);
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
+      if (currentStep > 0 && !validateStep(currentStep)) {
+        console.log("This is the error", errors);
+        message.error('Please fill in all required fields correctly');
+        return;
+      }
+
+      // Save to backend if campaignId exists
+      if (campaignId && currentStep > 0) {
+        // const stepData = formData[steps[currentStep].title.toLowerCase().split(' ')[0]];
+        let stepData;
+        if (currentStep === 1) {
+          stepData = formData.message; 
+        } else if (currentStep === 2) {
+          stepData = formData.agent;
+        } else if (currentStep === 3) {
+          stepData = formData.schedule;
+        }
+        console.log("This is the stepData", stepData);
+        axios.patch(`/campaigns/${campaignId}`, stepData)
+          .then(() => {
+            setCurrentStep(currentStep + 1);
+            window.scrollTo(0, 0);
+          })
+          .catch((error) => {
+            console.error('Error updating step data:', error);
+            message.error('Failed to save step data');
+          });
+      } else {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo(0, 0);
+      }
     }
   };
 
@@ -50,12 +151,10 @@ const CreateCampaignPage = () => {
     }
   };
 
-  // Handler to update the selected import method
   const handleSelectImportMethod = (id) => {
     setSelectedImportMethod(id);
   };
 
-  // Handler to simulate saving a draft
   const handleSaveDraft = () => {
     setIsDraftSaved(true);
     message.success({
@@ -65,31 +164,31 @@ const CreateCampaignPage = () => {
     setTimeout(() => setIsDraftSaved(false), 2000);
   };
 
-  // Handlers for form submissions that update data and move to the next step
-  const handleCampaignSubmit = (data) => {
-    setCampaignData(data);
-    next();
-  };
-
-  const handleAgentConfigSubmit = (data) => {
-    setAgentConfig(data);
-    next();
-  };
-
-  const handleScheduleSubmit = (data) => {
-    setScheduleData(data);
-    next();
-  };
-
   const handleLaunch = () => {
-    message.success({
-      content: 'Campaign launched successfully!',
-      icon: <RocketOutlined style={{ color: '#1890ff' }} />
-    });
-    // Additional launch logic would go here
+    // Validate all steps
+    for (let i = 1; i <= 3; i++) {
+      if (!validateStep(i)) {
+        message.error('Please complete all required fields before launching');
+        return;
+      }
+    }
+
+    if (campaignId) {
+      axios.patch(`/campaigns/${campaignId}`, formData)
+        .then(() => {
+          message.success({
+            content: 'Campaign launched successfully!',
+            icon: <RocketOutlined style={{ color: '#1890ff' }} />
+          });
+          navigate('/campaigns');
+        })
+        .catch((error) => {
+          console.error('Error launching campaign:', error);
+          message.error('Failed to launch campaign');
+        });
+    }
   };
 
-  // Renders content based on the current step
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
@@ -100,13 +199,31 @@ const CreateCampaignPage = () => {
           />
         );
       case 1:
-        return <CampaignForm onSubmit={handleCampaignSubmit} initialData={campaignData} />;
+        return (
+          <CampaignForm
+            data={formData.message}
+            onChange={(data) => handleFormChange('message', data)}
+            errors={errors}
+          />
+        );
       case 2:
-        return <AgentConfigForm onSubmit={handleAgentConfigSubmit} initialData={agentConfig} />;
+        return (
+          <AgentConfigForm
+            data={formData.agent}
+            onChange={(data) => handleFormChange('agent', data)}
+            errors={errors}
+          />
+        );
       case 3:
-        return <ScheduleForm onSubmit={handleScheduleSubmit} initialData={scheduleData} />;
+        return (
+          <ScheduleForm
+            data={formData.schedule}
+            onChange={(data) => handleFormChange('schedule', data)}
+            errors={errors}
+          />
+        );
       case 4:
-        return (  <Review/>      );
+        return <Review campaignData={formData} />;
       default:
         return null;
     }
@@ -121,10 +238,7 @@ const CreateCampaignPage = () => {
           <Card bordered={false} className="steps-card">
             <Steps current={currentStep} className="campaign-steps">
               {steps.map((item) => (
-                <Steps.Step 
-                  key={item.title} 
-                  title={item.title} 
-                />
+                <Steps.Step key={item.title} title={item.title} />
               ))}
             </Steps>
           </Card>
@@ -136,11 +250,7 @@ const CreateCampaignPage = () => {
           <div className="actions-container">
             <Space>
               {currentStep > 0 && (
-                <Button 
-                  onClick={prev}
-                  icon={<LeftOutlined />}
-                  size="large"
-                >
+                <Button onClick={prev} icon={<LeftOutlined />} size="large">
                   Back
                 </Button>
               )}
@@ -165,7 +275,7 @@ const CreateCampaignPage = () => {
         .campaign-container {
           margin: 0 auto;
           padding: 24px;
-          width:100%;
+          width: 100%;
         }
         .main-content {
           margin-top: 24px;
@@ -185,23 +295,6 @@ const CreateCampaignPage = () => {
           display: flex;
           justify-content: flex-end;
           margin-top: 24px;
-        }
-        .inner-card {
-          background: #fafafa;
-        }
-        .summary-placeholder {
-          padding: 20px;
-          text-align: center;
-          background: #f9f9f9;
-          border: 1px dashed #d9d9d9;
-          border-radius: 4px;
-          height: 100px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .review-card {
-          margin-bottom: 0;
         }
       `}</style>
     </Layout>

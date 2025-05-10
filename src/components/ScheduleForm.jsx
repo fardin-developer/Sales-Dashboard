@@ -1,37 +1,11 @@
-import React, { useEffect } from 'react';
-import { Form, Select, TimePicker, Card, Typography, Button, Row, Col } from 'antd';
+import React from 'react';
+import { Select, TimePicker, Typography, Row, Col } from 'antd';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 const { RangePicker } = TimePicker;
 
-const ScheduleForm = ({ onSubmit, initialValues = {} }) => {
-  const [form] = Form.useForm();
-
-  useEffect(() => {
-    if (initialValues.timeZone || initialValues.timeSlot) {
-      const timeSlot = initialValues.timeSlot 
-        ? [dayjs(initialValues.timeSlot[0]), dayjs(initialValues.timeSlot[1])]
-        : undefined;
-
-      form.setFieldsValue({
-        timeZone: initialValues.timeZone || undefined,
-        timeSlot
-      });
-    }
-  }, [initialValues, form]);
-
-  const handleSubmit = (values) => {
-    const formattedValues = {
-      ...values,
-      timeSlot: values.timeSlot 
-        ? [values.timeSlot[0].format('HH:mm'), values.timeSlot[1].format('HH:mm')]
-        : undefined
-    };
-    onSubmit(formattedValues);
-  };
-
+const ScheduleForm = ({ data, onChange, errors }) => {
   const timeZones = [
     { label: '(GMT-08:00) Pacific Time', value: 'America/Los_Angeles' },
     { label: '(GMT-07:00) Mountain Time', value: 'America/Denver' },
@@ -47,52 +21,59 @@ const ScheduleForm = ({ onSubmit, initialValues = {} }) => {
     { label: '(GMT+10:00) Australian Eastern Time', value: 'Australia/Sydney' }
   ];
 
+  const handleChange = (field, value) => {
+    onChange({ [field]: value });
+  };
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
-      <Card style={{ maxWidth: 700, width: '100%', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)' }}>
+      <div style={{ maxWidth: 700, width: '100%' }}>
         <Title level={4} style={{ textAlign: 'center' }}>Schedule Campaign</Title>
         <Text type="secondary" style={{ display: 'block', textAlign: 'center', marginBottom: 24 }}>
           Set timing and delivery options for your campaign
         </Text>
 
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-        >
+        <form>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
-                name="timeZone"
-                label="Time Zone"
-                rules={[{ required: true, message: 'Please select a time zone' }]}
-              >
-                <Select placeholder="Select time zone">
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', marginBottom: 8 }}>
+                  Time Zone <span style={{ color: 'red' }}>*</span>
+                </label>
+                <Select
+                  placeholder="Select time zone"
+                  value={data.time_zone}
+                  onChange={(value) => handleChange('time_zone', value)}
+                  style={{ width: '100%' }}
+                  status={errors.time_zone ? 'error' : ''}
+                >
                   {timeZones.map(tz => (
-                    <Option key={tz.value} value={tz.value}>{tz.label}</Option>
+                    <Select.Option key={tz.value} value={tz.value}>{tz.label}</Select.Option>
                   ))}
                 </Select>
-              </Form.Item>
+                {errors.time_zone && <Text type="danger">{errors.time_zone}</Text>}
+              </div>
             </Col>
-
-            <Col span={12}>
-              <Form.Item
-                name="timeSlot"
-                label="Active Hours"
-                rules={[{ required: true, message: 'Please select time slot' }]}
-              >
-                <RangePicker 
+            {/* <Col span={12}>
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', marginBottom: 8 }}>
+                  Active Hours <span style={{ color: 'red' }}>*</span>
+                </label>
+                <RangePicker
                   format="HH:mm"
                   minuteStep={15}
+                  value={data.timeSlot ? [dayjs(data.timeSlot[0], 'HH:mm'), dayjs(data.timeSlot[1], 'HH:mm')] : null}
+                  onChange={(dates) => handleChange('timeSlot', dates ? [dates[0].format('HH:mm'), dates[1].format('HH:mm')] : null)}
                   placeholder={['Start Time', 'End Time']}
                   style={{ width: '100%' }}
+                  status={errors.timeSlot ? 'error' : ''}
                 />
-              </Form.Item>
-            </Col>
+                {errors.timeSlot && <Text type="danger">{errors.timeSlot}</Text>}
+              </div>
+            </Col> */}
           </Row>
-
-        </Form>
-      </Card>
+        </form>
+      </div>
     </div>
   );
 };

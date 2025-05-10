@@ -1,30 +1,25 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Select, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const CampaignManagement = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [campaigns, setCampaigns] = useState([]);
   const [form] = Form.useForm();
   
-  const campaigns = [
-    {
-      id: 1,
-      name: 'Q1 Sales Outreach',
-      status: 'Running',
-      progress: 75,
-      leadsContacted: 850,
-      demosBooked: 62
-    },
-    {
-      id: 2,
-      name: 'Tech Startup Campaign',
-      status: 'Paused',
-      progress: 45,
-      leadsContacted: 395,
-      demosBooked: 25
-    }
-  ];
+
+  useEffect(() => {
+    axios.get('/campaigns/my-campaigns')
+      .then(response => {
+        setCampaigns(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching campaigns:', error); 
+      });
+  }, []);
 
   const handleNewCampaign = () => {
     setIsModalOpen(true);
@@ -37,13 +32,18 @@ const CampaignManagement = () => {
 
   const handleModalSubmit = () => {
     form.validateFields().then(values => {
-      console.log('New campaign values:', values);
-      // Here you would handle the creation of the new campaign
+      axios.post('/campaigns/create', values)
+        .then(response => {
+          console.log('Campaign created:', response.data);
+          // Navigate with the campaign ID from response
+          navigate('/campaigns/create', { state: { campaignId: response.data.id } });
+        })
+        .catch(error => {
+          console.error('Error creating campaign:', error);
+          // Handle error
+        });
       setIsModalOpen(false);
       form.resetFields();
-      
-      // Navigate to another page or refresh the current view
-      navigate('/campaigns/create', { state: values });
     });
   };
 
@@ -55,12 +55,6 @@ const CampaignManagement = () => {
           <p className="text-gray-600">Monitor and manage your active campaigns</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 border border-gray-300 rounded-lg flex items-center gap-2 bg-white text-gray-800">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-            </svg>
-            Edit Campaign
-          </button>
           <button 
             onClick={handleNewCampaign}
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg flex items-center gap-2"
@@ -201,7 +195,7 @@ const CampaignManagement = () => {
           name="newCampaignForm"
         >
           <Form.Item
-            name="campaignName"
+            name="name"
             label="Campaign Name"
             rules={[
               { required: true, message: 'Please enter a campaign name' },
@@ -211,7 +205,7 @@ const CampaignManagement = () => {
           </Form.Item>
           
           <Form.Item
-            name="objectiveType"
+            name="objective_type"
             label="Objective Type"
             rules={[
               { required: true, message: 'Please select an objective type' },
